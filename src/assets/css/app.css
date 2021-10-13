@@ -1,0 +1,145 @@
+.row {
+  --bs-gutter-x: 0!important;
+}
+.banner {
+    width: 100%;
+    max-height: 150px;
+    overflow: hidden;
+}
+.banner img {
+    width: 100%;
+}
+.footer-col {
+    padding-top: 20px;
+}
+.footer-col a{
+    color: rgb(105, 105, 105);
+    text-decoration: none;
+}
+.footer-col a:hover{
+    color: rgb(158, 158, 158);
+}
+.footer-nav {
+    padding:15px;
+    color:grey;
+    background-color: rgb(12 12 12)
+}
+
+.card-product-price {
+    font-size: 20px;
+    margin-bottom: 0px;
+    color: green;
+}
+.card-discounted-price, .card-product-ratings {
+    font-size: 13px;
+}
+.card-image-container {
+    height: 300px;
+    width: 100%;
+    max-height: 250px;
+    overflow: hidden;
+    padding: 5px;
+}
+
+.product-image-container img{
+    height: 100%;
+}
+.product-image-container {
+    text-align: center;
+    width: 100%;
+    max-height: 350px;
+    max-width: 300px;
+    overflow: hidden;
+}
+.product-description p {
+    margin-bottom: 0;
+}
+.product-name {
+    font-size: 30px;
+    margin-bottom: 10px!important;
+}
+.product-ratings {
+    color: rgb(207, 187, 0);
+    margin-bottom: 20px!important;
+}
+.product-tags a{
+    font-size: 15px;
+    color: rgb(48, 48, 48);
+    text-decoration: none;
+}
+.product-tags a:hover {
+    color: rgb(92, 92, 92);
+}
+.product-price {
+    font-size: 25px;
+}
+.product-details p{
+    font-size: 15px;
+    text-align: justify;
+}
+
+.profile-image-container {
+    overflow: hidden;
+}
+.profile-image-container img {
+    height: 250px;
+}
+.profile-container {
+    border: .5px solid rgb(204, 204, 204);
+    padding: 10px;
+    border-radius:5px
+}
+.personal-profile-settings p{ 
+    margin: 0px;
+}
+
+.message-item img {
+    width: 50px;
+    height: 50px;
+    border-radius: 30px;
+}
+.message {
+    text-align: justify;
+}
+.order-image-container {
+    max-width: 300px;
+    overflow: hidden;
+}
+.order-image-container img{ 
+    height: 200px;
+}
+.order-details-container {
+    text-align: center!important;
+    font-size: 14px;
+}
+.product-rate {
+    font-size: 50px;
+}
+.product-review-user {
+    font-size: 13px;
+}
+.product-review {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+
+::-webkit-scrollbar-track
+{
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  border-radius: 10px;
+  background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar
+{
+  width: 12px;
+  background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb
+{
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+  background-color: #bbbbbb;
+}
