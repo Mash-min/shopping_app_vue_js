@@ -6,6 +6,15 @@
     <div class="container mb-5">
         <div class="products-header d-flex justify-content-between mb-3">
             <h3>Products</h3>
+            <div class="col-3">
+              <label for="text-muted">Choose category</label>
+              <select class="form-select" aria-label="Default select example" @change="filterProductCategory" v-model="productCategory">
+                <option selected>All</option>
+                <option value="Category 1">Category 1</option>
+                <option value="Product Category 2">Product Category 2</option>
+                <option value="Category 3">Category 3</option>
+              </select>
+            </div>
         </div>
         <div class="row">
             <Product
@@ -39,7 +48,8 @@ export default {
     return {
       products: [],
       nextProductUrl: '',
-      showLoadMoreButton: true
+      showLoadMoreButton: true,
+      productCategory: ''
     }
   },
   components: {
@@ -53,29 +63,20 @@ export default {
   },
   methods : {
     getProducts() {
-      Swal.fire({
-        text: 'Loading...',
-        showConfirmButton: false
-      })
-      axios.get('http://localhost:8000/api/products').
+      this.showLoader()
+      axios.get(`${this.$appUrl}/api/products/paginate/8`).
       then(res => {
         this.products = res.data.products.data
         this.nextProductUrl = res.data.products.next_page_url
-        console.log(res.data)
-        console.log(this.nextProductUrl)
         Swal.close()
       })
     },
     
     loadMoreProducts() {
       if(this.nextProductUrl != null) {
-        Swal.fire({
-          text: 'Loading...',
-          showConfirmButton: false
-        })
+        this.showLoader()
         axios.get(this.nextProductUrl).
         then(res => {
-          console.log(res.data)
           this.nextProductUrl = res.data.products.next_page_url
           for(var x in res.data.products.data) {
             this.products.push(res.data.products.data[x])
@@ -88,6 +89,13 @@ export default {
           text: 'All products are loaded'
         })
       }
+    },
+
+    filterProductCategory() {
+      let filteredProducts = this.products.filter(product => {
+        return product.category == this.productCategory
+      })
+      this.products = filteredProducts
     }
   }
 }

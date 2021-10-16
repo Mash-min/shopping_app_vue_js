@@ -1,15 +1,13 @@
 <template>
   <div>
     <Banner/>
-
     <Navbar/>
-    
     <div class="container">
       <div class="row mb-5">
-        <div class="product-image-container col-lg-4 mb-3">
-          <img src="../assets/images/2.png" alt="">
+        <div class="product-image-container col-lg-6 mb-3">
+          <img id="image" v-if="images.length != 0" v-bind:src="`http://localhost:8000/storage/images/products/${images[0].image}`">
         </div>
-        <div class="product-description col-lg-4 mb-3">
+        <div class="product-description col-lg-6 mb-3">
           <p class="product-name">{{ product.name }}</p>
           <div class="product-ratings">
             <i class="fa fa-star "></i>
@@ -25,58 +23,60 @@
             </a>
           </div>
           <hr>
-          <p class="product-price fw-bolder">$ {{ product.price }}.00</p>
+          <p class="product-price fw-bolder">PHP {{ product.price }}.00</p>
           <div class="discounted d-flex justify-content-between mb-2">
             <div class="d-flex">
-              <p class="product-discounted-price text-muted text-decoration-line-through">$ 150.00</p>
+              <p class="product-discounted-price text-muted text-decoration-line-through">PHP 150.00</p>
               <span class="text-muted mx-2">- {{ product.discount }}%</span>
             </div>
             <a href="#"><i class="fa fa-heart-o text-danger"></i></a>
           </div>
           <hr>
-          <div class="d-flex">
-            <div v-if="authenticated" class="d-grid gap-2 col-6 p-1">
-              <button class="btn btn-outline-primary btn-sm " type="button">Add to Cart</button>
-            </div>
-            <div v-if="authenticated" class="d-grid gap-2 col-6 p-1">
-              <button class="btn btn-outline-dark btn-sm" type="button">Buy Product</button>
-            </div>
-            <div v-else class="d-grid gap-2 col-12 p-1">
-              <a href="/login" class="btn btn-outline-dark btn-sm" type="button">Login to you account</a>
-            </div>
-          </div>
+          <ProductCartButton
+          v-bind:user_id='1'
+          v-bind:product_id='product.id'/>
         </div>
-        <div class="col-lg-4 mb-3 p-2">
+        <div class="col-lg-12 mb-3 p-2">
           <ul class="list-group">
-            <li class="list-group-item product-details">
-              <small class="text-muted">Product details:</small>
-              <p>{{ product.description }}</p>
-            </li>
             <li class="list-group-item">
               <small class="text-muted">Standard Delivery:</small>
               <div class="d-flex justify-content-between">
                 <small class="text-muted">5 - 7 days</small>
-                <p class="fw-bolder">$ {{ product.shipping_fee }}.00</p>
+                <p class="fw-bolder">PHP {{ product.shipping_fee }}.00</p>
+              </div>
+            </li>
+            <li class="list-group-item">
+              <div class="d-flex justify-content-between">
+                <small class="text-muted">Stock Available: </small>
+                <p class="fw-bolder">{{ product.stock }} pcs</p>
               </div>
             </li>
             <li class="list-group-item">
               <small class="text-muted">Warranty / Return :</small><br>
-              <span class="fw-bolder">{{ product.refund }} Days Refund</span> <br>
-              <template>
-                <small v-if="product.warranty" class="text-muted">Warranty not available</small>
-                <small v-else class="text-muted">Warranty not available</small>
-              </template>
+              <div class="d-flex justify-content-between">
+                <template>
+                  <small v-if="product.warranty" class="text-muted">Warranty not available</small>
+                  <small v-else class="text-muted">Warranty not available</small>
+                </template>
+                <span class="fw-bolder">{{ product.refund }} Days Refund</span>
+              </div>
+            </li>
+            <li class="list-group-item product-details">
+              <small class="text-muted">Product details:</small>
+              <div v-html="product.description"/>
             </li>
           </ul>
         </div>
       </div>
     </div>
-    
+    <!-- ============ Product =========== -->
     <div class="container mb-5">
       <div class="row">
         <div class="col-md-12">
           <ul class="list-group">
-            <li class="list-group-item"><span class="fw-bolder">Reviews and Ratings / Sample Product 1</span></li>
+            <li class="list-group-item">
+              <span class="fw-bolder">Reviews and Ratings / Sample Product 1</span>
+            </li>
             <li class="list-group-item d-flex justify-content-around">
               <div class="product-rate-container">
                 <span class="product-rate">
@@ -168,7 +168,6 @@
       </div>
     </div>
     <!-- ============ Product-reviews =========== -->
-
     <Footer/>
   </div>
 </template>
@@ -178,6 +177,7 @@ import Banner from '../components/layouts/Banner'
 import Navbar from '../components/layouts/Navbar'
 import Footer from '../components/layouts/Footer'
 import ReviewItem from '../components/Products/ReviewItem'
+import ProductCartButton from '../components/Products/ProductCartButton.vue'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
@@ -186,39 +186,35 @@ export default {
   data() {
     return {
       product: [],
+      images: [],
       reviews: [
         {id: 1},
-        {id: 2},
+        {id: 2},    
         {id: 3},
         {id: 4},
         {id: 5},
       ],
-      authenticated: false
     }
   },
   components: {
     Banner,
     Navbar,
     Footer,
-    ReviewItem
+    ReviewItem,
+    ProductCartButton
   },
   mounted() {
-      Swal.fire({
-        text: 'Loading...',
-        showConfirmButton: false
-      })
+    this.showLoader()
     axios.get(`http://localhost:8000/api/products/${ this.$route.params.id}`).
     then(res => {
+      console.log(res.data)
       Swal.close()
       this.product = res.data.product
-      console.log(res)
+      this.images = res.data.product.images
     }).
     catch(err => {
       console.log(err)
     })
-  },
-  methods : {
-    
   }
 }
 </script>

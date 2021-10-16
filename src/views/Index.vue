@@ -1,11 +1,8 @@
 <template>
   <div>
     <Banner/>
-    
     <Navbar/>
-    
     <Cover/>
-
     <div class="container mb-5">
         <div class="products-header d-flex justify-content-between mb-3">
             <h3>Products</h3>
@@ -19,7 +16,6 @@
           />
         </div>
     </div>
-
     <Footer/>
   </div>
 </template>
@@ -56,7 +52,7 @@ export default {
         text: 'Loading...',
         showConfirmButton: false
       })
-      axios.get('http://localhost:8000/api/products').
+      axios.get(`${this.$appUrl}/api/products/paginate/8`).
       then(res => {
         this.products = res.data.products.data
         console.log(res.data.products.data)
