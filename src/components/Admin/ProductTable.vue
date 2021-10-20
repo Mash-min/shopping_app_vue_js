@@ -1,108 +1,101 @@
 <template>
   <div class="p-1">
     <div class="d-flex justify-content-end p-1">
-      <button class="btn btn-outline-danger btn-sm">Delete selected</button>
+      <button class="btn btn-outline-danger btn-sm" @click="deleteSelectedProducts">Delete selected</button>
     </div>
-    <table class="table table-hover table-sm">
+    <table class="table table-hover table-sm text-center">
       <thead>
         <tr>
           <th></th>
           <th scope="col">Product Name</th>
-          <th scope="col">Product ID</th>
           <th scope="col">Price</th>
-          <th scope="col">Stock</th>
           <th scope="col">Shipping Fee</th>
-          <th scope="col">Status</th>
+          <th scope="col">Discount</th>
+          <th scope="col">Stock</th>
           <th>Options</th>
         </tr>
       </thead>
       <tbody>
-        <ProductRow
-        v-for="product in products"
-        :key="product.id"
-        v-bind:product="product"
-        @emitFindProduct="findProduct"
-        @emitDeleteProduct="deleteProduct"/>
+        <tr v-for="product in products" :key="product.id">
+          <td>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" v-model="selectedProduct" v-bind:value="product.slug">
+            </div>
+          </td>
+          <td>{{ product.name }}</td>
+          <td>₱ {{ product.price }}.00</td>
+          <td>₱ {{ product.shipping_fee }}.00</td>
+          <td>{{ product.discount }}%</td>
+          <td>{{ product.stock }} pcs</td>
+          <td>
+            <EditButton 
+              v-on:emitUpdateProduct="findProduct(product.slug)"
+              v-show="hasEditButton"/>
+            <button class="btn btn-sm btn-outline-danger ms-1" 
+              @click="deleteProduct(product.slug)"
+              v-show="hasDeleteButton">
+              <i class="fa fa-trash"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-dark ms-1" 
+              v-show="hasArchiveButton"
+              @click="archiveProduct(product.slug)">
+              archive
+            </button>
+            <RestoreButton 
+              v-on:emitRestoreProduct="restoreProduct(product.slug)"
+              v-show="hasRestoreButton"/>
+          </td>
+        </tr>
       </tbody>
     </table>
-
-    <ProductEditForm
-      v-bind:editProduct="newProduct"
-      v-on:emitUpdateProduct="updateProduct"/>
-
-    <!-- <div class="d-grid col-4 offset-4">
-      <button class="btn btn-sm btn-outline-dark" v-on:click="loadProducts(productUrl)" v-if="productUrl !== null">
-        Load more
-      </button>
-    </div> -->
-    <div class="d-grid col-4 offset-4">
-      <nav aria-label="...">
-        <ul class="pagination">
-          <li class="page-item" 
-            v-for="link in links" 
-            :key="link.id" 
-            v-bind:class="{ 'disabled' : link.url == null , 'active' : link.active == true}">
-            <a class="page-link" @click="loadProducts(link.url)" href="#">
-              <span v-if="link.label == '&laquo; Previous' "><i class="fa fa-chevron-left"></i></span>
-              <span v-else-if="link.label == 'Next &raquo;' "><i class="fa fa-chevron-right"></i></span>
-              <span v-else>{{ link.label }}</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </div>
+    
+    <EditForm 
+      v-bind:editProduct="productFound"
+      v-on:emitEditedProduct="updateProduct"/>
+    
   </div>
 </template>
 
 <script>
-  import ProductRow from './ProductRow'
-  import ProductEditForm from './ProductEditForm'
+  import EditForm from './Buttons/EditForm'
+  import EditButton from './Buttons/EditButton'
+  import RestoreButton from './Buttons/RestoreButton'
   import axios from 'axios'
   import Swal from 'sweetalert2'
 
   export default {
     name: 'ProductTable',
+    props: {
+      'editButton' : String,
+      'deleteButton': String,
+      'archiveButton' : String,
+      'products' : Array,
+      'links' : Array,
+      hasDeleteButton: Boolean,
+      hasEditButton: Boolean,
+      hasArchiveButton: Boolean,
+      hasRestoreButton: Boolean
+    },
     components: {
-      ProductRow,
-      ProductEditForm
+      EditForm,
+      EditButton,
+      RestoreButton
     },
     data() {
       return {
-        products: [],
-        newProduct: [],
-        links: [],
-        productUrl: `${this.$appUrl}/api/products/paginate/10`,
-        deleteSelected: []
+        selectedProduct: [],
+        productFound: []
       }
     },
     mounted() {
       console.clear()
-      this.loadProducts(this.productUrl);
     },
     methods: {
-      loadProducts(url) {
-        this.showLoader("Loading")
-        axios.get(url)
-        .then(res => {
-          console.log(res.data)
-          this.products = res.data.products.data
-          this.links = res.data.products.links
-          this.productUrl = res.data.products.next_page_url
-          Swal.close()
-        })
-        .catch(err => {
-          console.log(err)
-          Swal.fire({
-            title: err,
-            icon: 'error'
-          })
-        })
-      }, 
-      
       findProduct(slug) {
         axios.get(`${this.$appUrl}/api/products/${slug}`)
         .then(res => {
-          this.newProduct = res.data.product
+          this.productFound = res.data.product
+          console.log(this.productFound)
         })
         .catch(err => {
           console.log(err)
@@ -123,9 +116,8 @@
             axios.delete(`${this.$appUrl}/api/products/${slug}`)
             .then(res => {
               Swal.fire({ title: res.data.message,  icon: 'success'})
-              this.products = this.products.filter(product => {
-                return product.slug != slug
-              })
+              let objIndex = this.products.findIndex(product => product.slug === slug)
+              this.$delete(this.products, objIndex)
             })
             .catch(err => {
               console.log(err.response)
@@ -134,17 +126,93 @@
         })
       },
 
-      updateProduct(data) {
-        let updatedData = data;
-        axios.put(`${this.$appUrl}/api/products/${data.id}`, updatedData)
+      deleteSelectedProducts() {
+        if(this.selectedProduct.length > 0) {
+          Swal.fire({
+            title: 'Are you sure?',
+            text: "The selected products will be deleted.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#0d6efd',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it'
+          }).then(result => {
+            if(result.isConfirmed) {
+              this.showLoader("Deleting products")
+              this.selectedProduct.forEach(slug => {
+                axios.delete(`${this.$appUrl}/api/products/${slug}`)
+                .then(() => {
+                  let objIndex = this.products.findIndex(product => product.slug === slug)
+                  this.$delete(this.products, objIndex)
+                  Swal.fire({ title: "All selected products are deleted", icon: 'success' })
+                })
+                .catch(err => {
+                  console.log(err.response)
+                })
+              })
+            }
+          })
+          // ================ SWAL ==============
+        }
+      },
+
+      updateProduct(product) {
+        console.log(product)
+        axios.put(`${this.$appUrl}/api/products/${product.slug}`, product)
         .then(res => {
-          Swal.fire("Product Updated");
-          this.$emit('updateProduct', res.data.product)
-          let productIndex = this.products.findIndex(product => product.slug == data.slug)
-          this.products[productIndex] = updatedData
+          let objIndex = this.products.findIndex(product => product.slug === res.data.product.slug)
+          this.products[objIndex] = res.data.product
+          Swal.fire({ title: "Product updated", icon: 'success' })
+          console.log(this.products[objIndex])
         })
         .catch(err => {
           console.log(err.response)
+        })
+      },
+
+      archiveProduct(slug) {
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "The selected product will be archived.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#0d6efd',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, archive it'
+        }).then(result => {
+          if(result.isConfirmed) {
+            axios.put(`${this.$appUrl}/api/products/archive/${slug}`, {})
+            .then(res => {
+              console.log(res)
+              Swal.fire({ title: "Product archived" , icon: 'success'})
+              let objIndex = this.products.findIndex(product => product.slug == slug)
+              this.$delete(this.products, objIndex)
+            })
+            .catch(err => console.log(err.response))
+          }
+        })
+      },
+
+      restoreProduct(slug) {
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "The selected product will be archived.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#0d6efd',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, archive it'
+        }).then(result => {
+          if(result.isConfirmed) {
+            axios.put(`${this.$appUrl}/api/products/restore/${slug}`)
+            .then(res => {
+              console.log(res)
+              let objIndex = this.products.findIndex(product => product.slug == slug)
+              this.$delete(this.products, objIndex);
+              Swal.fire({ title: "Product Restored", icon: 'success'})
+            })
+            .catch(err => Swal.fire({ title: err.response.message, icon: 'error' }))
+          }
         })
       }
 

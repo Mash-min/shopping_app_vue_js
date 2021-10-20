@@ -12,76 +12,44 @@
           <div class="dashboard-container">
             <div class="row">
               <div class="product-form-container p-3">
-                <form v-on:submit.prevent="addProduct">
-                  <div class="form-group mb-3">
-                    <label for="product-name">Name</label>
-                    <input type="text" class="form-control" placeholder="Enter product name" v-model="product.name">
-                  </div>
-                  <div class="form-group mb-3">
-                    <label for="product-description">Description</label>
-                    <Editor
-                    v-model="product.description"
-                    :init="{
-                      height: 400,
-                      menubar: false,
-                      plugins: [
-                        'advlist autolink lists link image charmap print preview anchor',
-                        'searchreplace visualblocks code fullscreen',
-                        'insertdatetime media table paste code help wordcount'
-                      ],
-                      toolbar:
-                        'undo redo | formatselect | bold italic backcolor | \
-                        alignleft aligncenter alignright alignjustify | \
-                        bullist numlist outdent indent | removeformat | help'
-                    }"/>
-                  </div>
-                  <div class="d-flex">
-                    <div class="form-group mb-3 col-4 p-1">
-                      <label for="product-price">Price</label>
-                      <input type="number" class="form-control" placeholder="Enter product price" v-model="product.price">
-                    </div>
-                    <div class="form-group mb-3 col-4 p-1">
-                      <label for="product-price">Discount</label>
-                      <input type="number" class="form-control" placeholder="Enter product discount" v-model="product.discount">
-                    </div>
-                    <div class="form-group mb-3 col-4 p-1">
-                      <label for="inputState">Category</label>
-                      <select class="form-control" aria-label="Default select example" v-model="product.category">
-                        <option 
-                        v-for="category in categories" 
-                        :key="category.id" 
-                        v-bind:value="category.category">{{ category.category }}</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="d-flex">
-                    <div class="form-group mb-3 col-4 p-1">
-                      <label for="product-stock">Stock</label>
-                      <input type="number" class="form-control" placeholder="Enter product stock" v-model="product.stock">
-                    </div>
-                    <div class="form-group mb-3 col-4 p-1">
-                      <label for="shipping-fee">Shipping fee</label>
-                      <input type="number" class="form-control" placeholder="Enter shipping fee" v-model="product.shipping_fee">
-                    </div>
-                    <div class="form-group mb-3 col-4 p-1">
-                      <label for="product-stock">Days to refund</label>
-                      <input type="number" class="form-control" placeholder="Enter days to refund" v-model="product.refund">
-                    </div>
-                  </div>
-                  <div class="form-group mb-3 col-6 p-1">
-                    <input class="form-check-input" type="checkbox" v-model="product.warranty"> Allow product warranty?
-                  </div>
-                  <div class="input-group mb-3">
-                    <label class="input-group-text" for="inputGroupFile01"><i class="fa fa-image"></i></label>
-                    <input type="file" class="form-control" id="inputGroupFile01" v-on:change="onFileChange" multiple>
-                  </div>
-                  <hr>
-                  <div class="d-flex justify-content-end">
-                    <div class="d-grid col-4">
-                      <button type="submit" class="btn btn-outline-primary">Add product</button>
-                    </div>
-                  </div>
-                </form>
+                <nav aria-label="breadcrumb" role="navigation">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item" 
+                      v-bind:class="{ 'text-muted fw-bolder' : breadcrumbs.productDetails == true }">
+                      Details
+                    </li>
+                    <li class="breadcrumb-item"
+                      v-bind:class="{ 'text-muted fw-bolder' : breadcrumbs.productImages == true }">
+                      Images
+                    </li>
+                    <li class="breadcrumb-item"
+                      v-bind:class="{ 'text-muted fw-bolder' : breadcrumbs.productCategory == true }">
+                      Categories & Tags
+                    </li>
+                    <li class="breadcrumb-item"
+                      v-bind:class="{ 'text-muted fw-bolder' : breadcrumbs.productPreview == true }">
+                      Preview
+                    </li>
+                  </ol>
+                </nav>
+                <AddProductForm 
+                  v-show="breadcrumbs.productDetails"
+                  v-on:emitProductDetails="submitProductDetails"
+                  v-bind:product="product"/>
+                <AddProductImage
+                  v-show="breadcrumbs.productImages"
+                  v-on:emitProductImages="submitProductImages"
+                  v-on:emitBackToDetails="backToDetails"/>
+                <AddProductCategory
+                  v-show="breadcrumbs.productCategory"
+                  v-on:emitProductCategories="submitProductCategories"
+                  v-on:emitBackToImages="backToImages"/>
+                <PreviewProduct
+                  v-show="breadcrumbs.productPreview"
+                  v-on:backToCategories="backToCategories"
+                  v-on:emitSaveProduct="saveProduct"
+                  v-bind:product="product"
+                  v-bind:productImages="productImages"/>
               </div>
             </div>
           </div>
@@ -97,9 +65,12 @@
   import OffCanvas from '../../components/Admin/OffCanvas'
   import SideBar from '../../components/Admin/SideBar'
   import OffCanvasHeader from '../../components/Admin/OffCanvasHeader'
+  import AddProductForm from '../../components/Admin/Forms/AddProductForm'
+  import AddProductImage from '../../components/Admin/Forms/AddProductImage'
+  import AddProductCategory from '../../components/Admin/Forms/AddProductCategory'
+  import PreviewProduct from '../../components/Admin/Forms/PreviewProduct'
   import axios from 'axios'
   import Swal from 'sweetalert2'
-  import Editor from '@tinymce/tinymce-vue'
 
   export default {
     name: 'AddProduct',
@@ -108,11 +79,14 @@
       OffCanvas,
       SideBar,
       OffCanvasHeader,
-      Editor
+      AddProductForm,
+      AddProductImage,
+      PreviewProduct,
+      AddProductCategory
     },
     data() {
       return {
-        product : {
+        product: {
           name: '',
           description: '',
           price: '',
@@ -124,73 +98,118 @@
           warranty: false
         },
         productId: '',
-        productImage: [],
-        categories: []
+        productImages: [],
+        breadcrumbs: {
+          productDetails: true,
+          productImages: false,
+          productCategory:false,
+          productPreview: false,
+        },
+        selectedCategories: []
       }
     },
     mounted() {
       console.clear()
-      this.getCategories()
     },
     methods: {
-      addProduct() {
-        this.showLoader("Adding product")
+      saveProduct() {
+        console.log({
+          product: this.product,
+          images: this.productImages,
+          categories: this.selectedCategories
+        })
+        this.showLoader("Adding Product")
         axios.post(`${this.$appUrl}/api/products`, this.product)
         .then(res => {
+          console.log(res)
           this.productId = res.data.product.id
-          Swal.fire({
-            title: "Product Added",
-            icon: 'success'
-          })
-          if(this.productImage.length > 0) {
-            this.uploadProductImage()
-          }
+          this.product.name = ''
+          this.product.price = ''
+          this.product.description = ''
+          this.product.shipping_fee = ''
+          this.product.discount = ''
+          this.product.category = ''
+          this.product.stock = ''
+          this.product.refund = ''
+          this.product.warranty = false
+          Swal.fire("Product Successfuly added")
+          this.uploadImage()
+          this.saveProductCategories()
+          this.backToDetails()
         })
         .catch(err => {
+          Swal.fire({
+            title: err.response.data.message
+          })
           console.log(err.response)
-          Swal.fire({
-            text: err.response.data.message,
-            icon: 'error'
-          })
         })
       },
-      // ============ addProduct ==========
-      getCategories() {
-        axios.get(`${this.$appUrl}/api/categories`)
-        .then(res => {
-          this.categories = res.data.categories.data
-        })
-        .catch(err => {
-          console.log(err)
-        }) 
-      },
-      // ============= getCategories ==============
-      onFileChange(e) {
-        for(var x in e.target.files) {
-          this.productImage.push(e.target.files[x])
-        }
-      },
-      // ================ onFileChage ===========
-      uploadProductImage() {
-        this.showLoader("Uploading Image")
+
+      uploadImage() {
         let formData = new FormData()
-        for(var x in this.productImage) {
-          formData.append('image[]', this.productImage[x])
-        }
+        this.productImages.forEach(images => {
+          formData.append('image[]', images)
+        })
         formData.append('product_id', this.productId)
         axios.post(`${this.$appUrl}/api/product-images`, formData)
         .then(res => {
-          Swal.fire({
-            title: "Product Added",
-            icon: 'success'
-          })
-          console.log(res.data)
+          console.log(res)
+          Swal.fire("Product Images uploaded")
+          this.$refs.inputFile.value = null
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      },
+
+      saveProductCategories() {
+        axios.post(`${this.$appUrl}/api/product-categories`, {
+          product_id: this.productId,
+          slug: this.selectedCategories
+        })
+        .then(res => {
+          console.log(res)
         })
         .catch(err => {
           console.log(err.response)
         })
+      },
+
+      submitProductDetails(product) {
+        console.log(product)
+        this.product = product
+        this.breadcrumbs.productDetails = false
+        this.breadcrumbs.productImages = true
+      },
+
+      submitProductImages(productImages) {
+        this.productImages = productImages
+        this.breadcrumbs.productCategory = true
+        this.breadcrumbs.productImages = false
+      },
+
+      submitProductCategories(categories) {
+        this.selectedCategories = categories
+        this.breadcrumbs.productCategory = false
+        this.breadcrumbs.productPreview = true
+      },
+
+      backToDetails() {
+        this.breadcrumbs.productDetails = true
+        this.breadcrumbs.productImages = false
+        this.breadcrumbs.productPreview = false
+      },
+
+      backToCategories() {
+        this.breadcrumbs.productCategory = true
+        this.breadcrumbs.productPreview = false
+      },
+
+      backToImages() {
+        this.breadcrumbs.productCategory = false
+        this.breadcrumbs.productImages = true
       }
-      // ================ uploadProductImage =================
+
     }
   }
 </script>

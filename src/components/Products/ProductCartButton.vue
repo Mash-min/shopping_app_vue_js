@@ -10,6 +10,9 @@
       <div v-else class="d-grid gap-2 col-12 p-1">
         <button class="btn btn-outline-dark btn-sm" type="button">Remove to Cart</button>
       </div>
+      <div class="d-grid gap-2 p-1">
+        <button class="btn btn-outline-dark btn-sm" type="button"><i class="fa fa-heart"></i></button>
+      </div>
     </div>
     <div v-else class="d-grid gap-2 col-12 p-1">
       <a href="/login" class="btn btn-outline-dark btn-sm" type="button">Login to you account</a>

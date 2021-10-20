@@ -4,9 +4,11 @@ import Login from '../views/Login.vue'
 import Index from '../views/Index.vue'
 import Products from '../views/Products.vue'
 import Product from '../views/Product'
-import Dashboard from '../views/admin/Dashboard'
-import ProductList from '../views/admin/ProductList'
-import AddProduct from '../views/admin/AddProduct'
+import Dashboard from '../views/Admin/Dashboard'
+import ProductList from '../views/Admin/ProductList'
+import AddProduct from '../views/Admin/AddProduct'
+import ProductArchive from '../views/Admin/ProductArchive'
+import ProductCategories from '../views/Admin/ProductCategories'
 
 Vue.use(VueRouter)
 
@@ -45,6 +47,16 @@ const routes = [
     path: '/admin/add-product',
     name: 'AddProduct',
     component: AddProduct
+  },
+  {
+    path: '/admin/product-archive',
+    name: 'ProductArchive',
+    component: ProductArchive
+  },
+  {
+    path: '/admin/product-categories',
+    name: 'ProductCategories',
+    component: ProductCategories
   }
 ]
 
@@ -52,5 +64,9 @@ const router = new VueRouter({
   mode: 'history',
   routes
 })
+
+// router.beforeEach((to, from, next) => {
+
+// })
 
 export default router

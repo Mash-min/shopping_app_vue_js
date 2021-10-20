@@ -2,7 +2,9 @@
   <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3 p-2">
     <div class="card">
         <div class="card-image-container">
-          <img v-if="product.images.length != 0" v-bind:src="`http://localhost:8000/storage/images/products/${product.images[0].image}`">
+          <img 
+            v-if="product.images.length != 0" 
+            v-bind:src="`http://localhost:8000/storage/images/products/${product.slug}/${product.images[0].image}`">
           <i v-else class="fa fa-image fa-2x mt-5 text-muted"></i>
         </div>
         <div class="card-body">
@@ -21,7 +23,7 @@
               (14)
           </div>
           <div class="d-grid gap-2">
-            <a v-bind:href="'/products/'+ product.slug" class="btn btn-outline-primary btn-sm" type="button">View product</a>
+            <a v-bind:href="'/products/'+ product.slug" target="_blank" class="btn btn-outline-primary btn-sm" type="button">View product</a>
           </div>
         </div>
     </div>

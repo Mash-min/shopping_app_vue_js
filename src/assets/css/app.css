@@ -127,6 +127,9 @@
     margin-top: 10px;
     font-size: 14px;
 }
+.active-breadcrumb {
+    color:#0d6efd;
+}
 
 
 ::-webkit-scrollbar-track

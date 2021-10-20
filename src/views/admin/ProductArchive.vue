@@ -7,7 +7,7 @@
         <SideBar/>
         <div class="col-lg-9 mb-5">
           <OffCanvasHeader 
-            v-bind="{ title: 'Product List' }"/>
+            v-bind="{ title: 'Product Archive' }"/>
           <div class="d-grid p-2">
             <input type="text" class="form-control" placeholder="Search product">
           </div>
@@ -15,12 +15,11 @@
             <div class="row">
               <ProductTable 
                 v-bind:products="products"
-                v-bind:links="links"
                 v-bind:hasDeleteButton="true"
-                v-bind:hasEditButton="true"
-                v-bind:hasArchiveButton="true"
-                v-bind:hasRestoreButton="false"/>
-              <ProductPagination
+                v-bind:hasEditButton="false"
+                v-bind:hasArchiveButton="false"
+                v-bind:hasRestoreButton="true"/>
+              <ProductPagination 
                 v-bind:links="links"
                 v-on:emitProductUrl="loadProducts"/>
             </div>
@@ -39,8 +38,8 @@
   import ProductTable from '../../components/Admin/ProductTable'
   import OffCanvasHeader from '../../components/Admin/OffCanvasHeader'
   import ProductPagination from '../../components/Admin/ProductPagination'
-  import axios from 'axios'
   import Swal from 'sweetalert2'
+  import axios from 'axios'
 
   export default {
     name: 'ProductList',
@@ -55,8 +54,8 @@
     data() {
       return {
         products: [],
-        links: [],
-        productUrl: `${this.$appUrl}/api/products/paginate/10/status=active`,
+        productUrl: `${this.$appUrl}/api/products/paginate/10/status=archived`,
+        links: []
       }
     },
     mounted() {

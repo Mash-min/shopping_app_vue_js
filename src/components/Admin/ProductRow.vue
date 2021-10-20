@@ -2,14 +2,15 @@
   <tr>
     <td>
       <div class="form-check">
-        <input class="form-check-input" type="checkbox" v-model="checkedProducts" v-bind:value="product.slug">
+        <input class="form-check-input" type="checkbox" v-model="checkedProduct" v-bind:value="product.slug" @change="emitCheckProduct(product.slug)">
       </div>
     </td>
     <td>{{ product.name }}</td>
-    <th>{{ product.slug }}</th>
-    <td>PHP {{ product.price }}</td>
+    <td>₱ {{ product.price }}.00</td>
+    <td>₱ {{ product.shipping_fee }}.00</td>
+    <td>{{ product.discount }}%</td>
     <td>{{ product.stock }} pcs</td>
-    <td>PHP {{ product.shipping_fee }}</td>
+    <td>{{ product.slug }}</td>
     <td>
       <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" v-bind:checked="true">
@@ -36,7 +37,7 @@
     data() {
       return {
         isActive: true,
-        checkedProducts: []
+        checkedProduct: ''
       }
     },
     methods: {
@@ -48,8 +49,8 @@
         this.$emit('emitDeleteProduct', product_slug)
       },
 
-      checkProduct() {
-        console.log(this.checkedProducts)
+      emitCheckProduct(product_slug) {
+        this.$emit('emitCheckProduct', product_slug)
       }
     }
   }

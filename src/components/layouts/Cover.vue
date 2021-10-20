@@ -2,7 +2,7 @@
   
     <div class="container mb-5">
         <div class="row">
-            <div class="col-lg-3 col-md-3 d-none d-lg-block d-xxl-block">
+            <div class="col-lg-3 col-md-3 d-none d-lg-block d-xxl-block p-1">
                 <div class="list-group">
                     <a href="#" class="list-group-item list-group-item-action">Product Category 1</a>
                     <a href="#" class="list-group-item list-group-item-action">Product Category 2</a>
@@ -14,7 +14,7 @@
                     <a href="#" class="list-group-item list-group-item-action">Product Category 8</a>
                 </div>
             </div>
-            <div class="col-lg-9 col-md-12">
+            <div class="col-lg-9 col-md-12 p-1">
                 <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-indicators">
                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>

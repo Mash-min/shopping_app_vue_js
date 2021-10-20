@@ -1,18 +1,32 @@
 <template>
-  <nav aria-label="Page navigation example">
-    <ul class="pagination">
-      <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-      <li class="page-item"><a class="page-link" href="#">1</a></li>
-      <li class="page-item"><a class="page-link" href="#">2</a></li>
-      <li class="page-item"><a class="page-link" href="#">3</a></li>
-      <li class="page-item"><a class="page-link" href="#">Next</a></li>
-    </ul>
-  </nav>
+  <div class="d-flex justify-content-center">
+    <nav aria-label="...">
+      <ul class="pagination">
+        <li class="page-item" 
+          v-for="link in links" 
+          :key="link.id" 
+          v-bind:class="{ 'disabled' : link.url == null , 'active' : link.active == true}">
+          <a class="page-link" @click="emitProductUrl(link.url)" href="#">
+            <span v-if="link.label == '&laquo; Previous' "><i class="fa fa-chevron-left"></i></span>
+            <span v-else-if="link.label == 'Next &raquo;' "><i class="fa fa-chevron-right"></i></span>
+            <span v-else>{{ link.label }}</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
 </template>
 
 <script>
   export default {
-    name: 'ProductPagination',
-    props: ['products']
+    name: 'ProductPagination' ,
+    props: [
+      'links'
+    ],
+    methods: {
+      emitProductUrl(url) {
+        this.$emit('emitProductUrl', url)
+      }
+    }
   }
 </script>

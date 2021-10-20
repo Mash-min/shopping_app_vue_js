@@ -48,11 +48,8 @@ export default {
   },
   methods : {
     getProducts() {
-      Swal.fire({
-        text: 'Loading...',
-        showConfirmButton: false
-      })
-      axios.get(`${this.$appUrl}/api/products/paginate/8`).
+      this.showLoader("Loading")
+      axios.get(`${this.$appUrl}/api/products/paginate/8/status=active`).
       then(res => {
         this.products = res.data.products.data
         console.log(res.data.products.data)
