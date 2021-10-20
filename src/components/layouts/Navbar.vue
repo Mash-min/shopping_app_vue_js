@@ -12,7 +12,7 @@
                   <a class="nav-link" href="/products">Products</a>
                 </li>
                 <li v-if="authenticated" class="nav-item d-flex justify-content-center">
-                  <a class="nav-link" href="#">Mashiyyat</a>
+                  <a class="nav-link" href="profile">Mashiyyat</a>
                 </li>
                 <li class="nav-item d-flex justify-content-center">
                   <a class="nav-link" href="#">Logout</a>
@@ -32,17 +32,23 @@
             </div>
           </div>
       </nav>
-      <nav class="navbar navbar-expand-lg navbar-light bg-light mb-5 p-4">
-          <div class="container">
-              <form class="container-fluid" action="/search/">
-                  <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search product">
-                    <button class="btn btn-outline-primary"><i class="fa fa-search"></i></button>
-                  </div>
-              </form>
-              <div class="d-grid d-flex">
-                <a href="/products" class="btn btn-outline-dark btn-lg m-1"><i class="fa fa-shopping-basket"></i></a>
-                <a href="/products" class="btn btn-outline-dark btn-lg m-1"><i class="fa fa-shopping-cart"></i></a>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light mb-5">
+          <div class="container center">
+              <div class="col-md-6">
+                <form action="/search/">
+                    <div class="input-group">
+                      <input type="text" class="form-control" placeholder="Search product">
+                      <button class="btn btn-outline-primary"><i class="fa fa-search"></i></button>
+                    </div>
+                </form>
+              </div>
+              <div class="col-md-6 d-flex justify-content-end">
+                <a href="/products" class="btn btn-outline-dark m-1">
+                  <i class="fa fa-shopping-cart"></i>
+                </a>
+                <a href="/products" class="btn btn-outline-dark m-1">
+                  Buy now
+                </a>
               </div>
           </div>
       </nav>

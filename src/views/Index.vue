@@ -5,8 +5,8 @@
     <Cover/>
     <div class="container mb-5">
         <div class="products-header d-flex justify-content-between mb-3">
-            <h3>Products</h3>
-            <a href="/products" class="btn btn-outline-primary">View all products</a>
+          <h3>Products</h3>
+          <a href="/products" class="btn btn-outline-primary">View all products</a>
         </div>
         <div class="row">
           <Product
@@ -54,6 +54,10 @@ export default {
         this.products = res.data.products.data
         console.log(res.data.products.data)
         Swal.close()
+      })
+      .catch(err => {
+        console.log(err)
+        Swal.fire({ title: err, icon: 'error'})
       })
     }
   }

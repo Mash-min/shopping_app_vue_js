@@ -6,6 +6,8 @@ import 'font-awesome/css/font-awesome.css'
 import router from './router'
 import Swal from 'sweetalert2'
 import '@tinymce/tinymce-vue/lib/browser/tinymce-vue'
+import VueImg from 'v-img';
+Vue.use(VueImg);
 
 Vue.config.productionTip = false
 Vue.prototype.$appUrl = `http://localhost:8000`

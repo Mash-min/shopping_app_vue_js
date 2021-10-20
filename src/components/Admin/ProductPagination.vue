@@ -6,11 +6,11 @@
           v-for="link in links" 
           :key="link.id" 
           v-bind:class="{ 'disabled' : link.url == null , 'active' : link.active == true}">
-          <a class="page-link" @click="emitProductUrl(link.url)" href="#">
+          <button class="page-link" @click="emitProductUrl(link.url), scrollToTop">
             <span v-if="link.label == '&laquo; Previous' "><i class="fa fa-chevron-left"></i></span>
             <span v-else-if="link.label == 'Next &raquo;' "><i class="fa fa-chevron-right"></i></span>
             <span v-else>{{ link.label }}</span>
-          </a>
+          </button>
         </li>
       </ul>
     </nav>

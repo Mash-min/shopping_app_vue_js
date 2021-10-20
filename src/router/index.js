@@ -9,6 +9,7 @@ import ProductList from '../views/Admin/ProductList'
 import AddProduct from '../views/Admin/AddProduct'
 import ProductArchive from '../views/Admin/ProductArchive'
 import ProductCategories from '../views/Admin/ProductCategories'
+import Profile from '../views/Profile'
 
 Vue.use(VueRouter)
 
@@ -57,6 +58,11 @@ const routes = [
     path: '/admin/product-categories',
     name: 'ProductCategories',
     component: ProductCategories
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile
   }
 ]
 
@@ -65,8 +71,5 @@ const router = new VueRouter({
   routes
 })
 
-// router.beforeEach((to, from, next) => {
-
-// })
-
 export default router
+

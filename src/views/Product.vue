@@ -4,19 +4,29 @@
     <Navbar/>
     <div class="container">
       <div class="row mb-5">
-        <div class="product-image-container col-lg-6 mb-3">
-          <img id="image" 
-            v-if="images.length != 0" 
-            v-bind:src="`http://localhost:8000/storage/images/products/${product.slug}/${images[0].image}`">
+        <div class="product-image-container col-lg-6 mb-5 mt-3 p-3">
+          <div v-show="product.images == 0">
+            <i class="fa fa-image fa-2x"></i> 
+            <br>
+            <span class="text-muted">No image</span>
+          </div>
+          <hooper :settings="hooperSettings">
+            <slide v-for="image in product.images" :key="image.id">
+              <img id="image"
+                v-img
+                v-bind:src="`http://localhost:8000/storage/images/products/${product.slug}/${image.image}`">
+            </slide>
+            <hooper-pagination slot="hooper-addons"></hooper-pagination>
+          </hooper>
         </div>
         <div class="product-description col-lg-6 mb-3">
+          <p class="product-name">{{ product.name }}</p>
           <div class="col-md-12 mb-3">
             <button type="button" class="btn btn-outline-success btn-sm ms-1"
             v-for="category in product.categories" :key="category.id">
             {{ category.category.category }}
             </button>
           </div>
-          <p class="product-name">{{ product.name }}</p>
           <div class="product-ratings">
             <i class="fa fa-star "></i>
             <i class="fa fa-star "></i>
@@ -189,6 +199,8 @@ import Footer from '../components/layouts/Footer'
 import ReviewItem from '../components/Products/ReviewItem'
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { Hooper, Slide, Pagination as HooperPagination } from 'hooper';
+import 'hooper/dist/hooper.css';
 
 export default {
   name: 'Product',
@@ -202,7 +214,23 @@ export default {
         {id: 3},
         {id: 4},
         {id: 5},
-      ]
+      ],
+      hooperSettings: {
+        autoPlay: true,
+        itemsToShow: 3,
+        centerMode: true,
+        infiniteScroll: true,
+        breakpoints: {
+          800: {
+            centerMode: true,
+            itemsToShow: 4
+          },
+          1000: {
+            centerMode: true,
+            itemsToShow: 3,
+          }
+        }
+      }
     }
   },
   components: {
@@ -210,6 +238,9 @@ export default {
     Navbar,
     Footer,
     ReviewItem,
+    Hooper,
+    Slide,
+    HooperPagination,
   },
   mounted() {
     this.showLoader("Loading")
